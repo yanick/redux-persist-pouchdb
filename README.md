@@ -1,0 +1,3 @@
+# Redux Persist PouchDB Adaptor
+
+

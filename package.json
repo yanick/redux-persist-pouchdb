@@ -1,8 +1,8 @@
 {
   "name": "redux-persist-pouchdb",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "PouchDB adaptor for Redux-Persist",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,6 +10,10 @@
   "author": "Yanick Champoux <yanick@babyl.ca> (http://techblog.babyl.ca)",
   "license": "ISC",
   "dependencies": {
+    "pouchdb": "^7.0.0",
+    "redux-persist": "^5.10.0"
+  },
+  "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.0.0",
     "@babel/node": "^7.4.5",
@@ -29,10 +33,10 @@
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
-    "debug": "^3.1.0",
-    "pouchdb": "^7.0.0",
+    "debug": "^3.2.6",
+    "jest": "^24.8.0",
+    "pouchdb-adapter-memory": "^7.1.1",
     "pouchdb-adapter-node-websql": "^7.0.0",
-    "redux": "^4.0.0",
-    "redux-persist": "^5.10.0"
+    "redux": "^4.0.0"
   }
 }
