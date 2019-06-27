@@ -37,4 +37,8 @@ export class PouchDBStorage {
         doc._persist = JSON.parse(doc._persist);
         return this._db.put({ _id: key, _rev: doc._persist._rev, doc });
     }
+
+    async removeItem( key, value ) {
+        return this._db.remove( await this._db.get(key) );
+    }
 }

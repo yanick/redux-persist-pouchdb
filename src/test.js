@@ -51,4 +51,18 @@ test( 'basic', async () => {
     expect(secondStore.getState()).toHaveProperty('i',3);
 
     await p2.flush();
+
+   const d = await storage._db.get( 'persist:myRoot' ); 
+
+    expect(d).toHaveProperty('doc.i',"3");
+
+    try {
+        await p2.purge();
+    }
+    catch(e) {
+        console.log(e);
+    }
+
+    expect( storage._db.get('persist:myRoot') ).rejects.toThrow();
 });
+
