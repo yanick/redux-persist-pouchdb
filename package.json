@@ -2,8 +2,9 @@
   "name": "redux-persist-pouchdb",
   "version": "0.1.0",
   "description": "PouchDB adaptor for Redux-Persist",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
+      "build": "babel src/index.js -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
