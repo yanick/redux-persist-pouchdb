@@ -1,6 +1,6 @@
 {
   "name": "redux-persist-pouchdb",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "PouchDB adaptor for Redux-Persist",
   "main": "dist/index.js",
   "scripts": {
