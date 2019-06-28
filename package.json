@@ -4,10 +4,14 @@
   "description": "PouchDB adaptor for Redux-Persist",
   "main": "dist/index.js",
   "scripts": {
-      "build": "babel src/index.js -d dist",
+    "build": "babel src/index.js -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yanick/redux-persist-pouchdb"
+  },
+  "keywords": [ "pouchdb", "redux", "persistence" ],
   "author": "Yanick Champoux <yanick@babyl.ca> (http://techblog.babyl.ca)",
   "license": "ISC",
   "dependencies": {

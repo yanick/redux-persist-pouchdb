@@ -20,11 +20,16 @@ export function persistReducer(persistConfig, rootReducer) {
 export class PouchDBStorage {
 
     constructor(db,options={}) {
-        this._db = new PouchDB(db,options);
+        if( typeof db !== 'string' && options == {} ) {
+            this.db = db;
+        }
+        else {
+            this.db = new PouchDB(db,options);
+        }
     }
 
     async getItem( key ) {
-        const doc = await this._db.get(key);
+        const doc = await this.db.get(key);
         if( doc.doc._persist ) {
             doc.doc._persist._rev = doc._rev;
             doc.doc._persist = JSON.stringify(doc.doc._persist);
@@ -35,10 +40,10 @@ export class PouchDBStorage {
     async setItem( key, value ) {
         const doc = JSON.parse(value);
         doc._persist = JSON.parse(doc._persist);
-        return this._db.put({ _id: key, _rev: doc._persist._rev, doc });
+        return this.db.put({ _id: key, _rev: doc._persist._rev, doc });
     }
 
     async removeItem( key, value ) {
-        return this._db.remove( await this._db.get(key) );
+        return this.db.remove( await this.db.get(key) );
     }
 }
