@@ -8,23 +8,29 @@
 
     import PouchDB from 'pouchdb';
 
-    PouchDB.plugin( require( 'pouchdb-adapter-memory' ) );
-
     import { createStore } from 'redux';
-    import { persistStore } from 'redux-persist';
 
+    import { persistStore } from 'redux-persist';
     // IMPORTANT: persistReducer must be imported here, not
     // from 'redux-persist'
     import { persistReducer, PouchDBStorage } from 'redux-persist-pouchdb';
 
-    const storage = new PouchDBStorage( 'test', { adapter: 'memory' } );
+    // just doin' the usual PouchDB stuff
+    PouchDB.plugin( require( 'pouchdb-adapter-memory' ) );
+    const pouchdb = new PouchDB( 'test', { adapter: 'memory' } );
 
-    const reducer = function(state={ i: 0 }, action ) {
+    const storage = new PouchDBStorage(pouchdb);
+
+    // your regular reducer
+    const reducer = function( state={ i: 0 }, action ) {
         if( action.type === 'INC' ) { return { i: 1 + state.i } };
         return state;
     }
 
-    const persistedReducer = persistReducer({ storage, key: 'myRoot' }, reducer );
+    const persistedReducer = persistReducer(
+        { storage, key: 'myRoot' }, 
+        reducer 
+    );
 
     const store = createStore( persistedReducer );
 
@@ -47,4 +53,33 @@ is saved along the document.
 
 Connect to the PouchDB backend.
 
-    const storage = new PouchDBStorage( db_name, { ...pouchDB_options } )
+    const storage = new PouchDBStorage( db_name, { ...pouchDB_options } );
+
+    // or
+
+    const pouchdb = new PouchDB( db_name, { ...options } );
+    const storage  = new PouchDBStorage( pouchdb );
+
+The `PouchDBStorage` object has the following attributes and methods:
+
+#### db
+
+    const doc = storage.db.get({ id: 'my_doc' });
+
+The underlying PouchDB object.
+
+#### getItem( *key* )
+
+Retrieves the persisted document based on its key.
+
+#### setItem( *key*, *value* )
+
+Save the document to PouchDB.
+
+#### removeItem( *key* )
+
+Savagely destroy the document in PouchDB (but doesn't 
+touch the current state in the Redux store).
+
+
+
