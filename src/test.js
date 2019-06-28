@@ -52,7 +52,7 @@ test( 'basic', async () => {
 
     await p2.flush();
 
-   const d = await storage._db.get( 'persist:myRoot' ); 
+   const d = await storage.db.get( 'persist:myRoot' );
 
     expect(d).toHaveProperty('doc.i',"3");
 
@@ -63,6 +63,29 @@ test( 'basic', async () => {
         console.log(e);
     }
 
-    expect( storage._db.get('persist:myRoot') ).rejects.toThrow();
+    expect( storage.db.get('persist:myRoot') ).rejects.toThrow();
+});
+
+test( 'pass the db directly', async () => {
+    const db = new PouchDB( 'test2', { adapter: 'memory' } );
+    const storage = new PouchDBStorage(db);
+
+    const reducer = function(state={ i: 0 }, action ) {
+        if( action.type === 'INC' ) { return { i: 1 + state.i } };
+        return state;
+    }
+
+    const persistedReducer = persistReducer({ storage, key: 'myRoot' }, reducer );
+
+    const store = createStore( persistedReducer );
+
+    const persistor = await createPersistor(store);
+
+    const INC = { type: 'INC' };
+
+    store.dispatch(INC);
+    store.dispatch(INC);
+
+    expect(store.getState()).toHaveProperty( 'i', 2 );
 });
 
