@@ -40,6 +40,35 @@ test( 'basic', async () => {
 
     await persistor.flush();
 
+    store.dispatch(INC);
+
+    expect(store.getState()).toHaveProperty( 'i', 3 );
+
+});
+
+test( 'two clients', async () => {
+    const storage = new PouchDBStorage( 'test', { adapter: 'memory' } );
+
+    const reducer = function(state={ i: 0 }, action ) {
+        if( action.type === 'INC' ) { return { i: 1 + state.i } };
+        return state;
+    }
+
+    const persistedReducer = persistReducer({ storage, key: 'myRoot' }, reducer );
+
+    const store = createStore( persistedReducer );
+
+    const persistor = await createPersistor(store);
+
+    const INC = { type: 'INC' };
+
+    store.dispatch(INC);
+    store.dispatch(INC);
+
+    expect(store.getState()).toHaveProperty( 'i', 2 );
+
+    await persistor.flush();
+
     const secondStore = createStore( persistedReducer );
     expect(secondStore.getState()).toHaveProperty('i',0);
 
