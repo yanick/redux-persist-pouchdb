@@ -33,6 +33,7 @@
     );
 
     const store = createStore( persistedReducer );
+    storage.store = store;
 
     const persistor = persistStore( store, null, () => {
         store.dispatch({ type: INC });
@@ -67,6 +68,11 @@ The `PouchDBStorage` object has the following attributes and methods:
     const doc = storage.db.get({ id: 'my_doc' });
 
 The underlying PouchDB object.
+
+### store
+
+The storage object must be given a link to the store using it so that we
+can save the new _rev of the document once it's sent to PouchDB.
 
 #### getItem( *key* )
 
