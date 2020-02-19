@@ -12,47 +12,80 @@ var _pouchdb = _interopRequireDefault(require("pouchdb"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function persistReducer(persistConfig, rootReducer) {
-  const reducer = (0, _reduxPersist.persistReducer)(persistConfig, rootReducer);
-  return function (state = undefined, action) {
-    let new_state = reducer(state, action); // all that to add the _rev to the _persist state
+const UPDATE_REV = 'persist-pouchdb/UPDATE_REV';
 
-    if (action.type === _reduxPersist.REHYDRATE && new_state._persist && action.payload && action.payload._persist) {
-      new_state._persist._rev = action.payload._persist._rev;
+function persistReducer(persistConfig = {}, rootReducer) {
+  return (0, _reduxPersist.persistReducer)(persistConfig, function (state = undefined, action) {
+    const _rev = state && state._rev;
+
+    state = { ...rootReducer(state, action),
+      _rev
+    };
+
+    if (action.type === UPDATE_REV) {
+      state = { ...state,
+        _rev: action.rev
+      };
     }
 
-    return new_state;
-  };
+    return state;
+  });
 }
 
 class PouchDBStorage {
   constructor(db, options = {}) {
-    this._db = new _pouchdb.default(db, options);
+    if (typeof db !== 'string' && options == {}) {
+      this.db = db;
+    } else {
+      this.db = new _pouchdb.default(db, options);
+    }
+  }
+
+  set store(store) {
+    this._store = store;
   }
 
   async getItem(key) {
-    const doc = await this._db.get(key);
+    const doc = await this.db.get(key);
 
     if (doc.doc._persist) {
       doc.doc._persist._rev = doc._rev;
       doc.doc._persist = JSON.stringify(doc.doc._persist);
     }
 
+    doc.doc._rev = JSON.stringify(doc._rev);
     return JSON.stringify(doc.doc);
   }
 
   async setItem(key, value) {
     const doc = JSON.parse(value);
-    doc._persist = JSON.parse(doc._persist);
-    return this._db.put({
+
+    const _rev = doc._rev && JSON.parse(doc._rev);
+
+    delete doc._rev;
+
+    const _persist = JSON.parse(doc._persist);
+
+    delete doc._persist;
+    const result = await this.db.put({
       _id: key,
-      _rev: doc._persist._rev,
+      _rev,
       doc
     });
+
+    if (this._store) {
+      this._store.dispatch({
+        type: UPDATE_REV,
+        ...result
+      });
+    }
+
+    return result;
   }
 
   async removeItem(key, value) {
-    return this._db.remove((await this._db.get(key)));
+    const fromDb = await this.db.get(key);
+    return this.db.remove(fromDb);
   }
 
 }
