@@ -3,8 +3,8 @@ import PouchDB from 'pouchdb';
 PouchDB.plugin(require('pouchdb-adapter-memory'));
 
 import {createStore} from 'redux';
-import {persistStore} from 'redux-persist';
-import {persistReducer, PouchDBStorage} from './index';
+import {persistStore,persistReducer} from 'redux-persist';
+import {PouchDBStorage} from './index';
 
 const sampleReducer = function(state = {i: 0}, action) {
   if (action.type === 'INC') {
@@ -16,7 +16,9 @@ const sampleReducer = function(state = {i: 0}, action) {
 function createPersistor(store) {
   return new Promise(accept => {
     try {
-      const persistor = persistStore(store, null, () => accept(persistor));
+      const persistor = persistStore(store, {
+          writeFailHandler: e => throw new Error(e)
+      }, () => accept(persistor));
     } catch (e) {
       console.log(e);
     }
@@ -36,8 +38,6 @@ test('basic', async () => {
   const persistedReducer = persistReducer({storage, key: 'myRoot'}, reducer);
 
   const store = createStore(persistedReducer);
-
-  storage.store = store;
 
   const persistor = await createPersistor(store);
 
@@ -60,14 +60,7 @@ test('pass the db directly', async () => {
   const db = new PouchDB('test-direct-db', {adapter: 'memory'});
   const storage = new PouchDBStorage(db);
 
-  const reducer = function(state = {i: 0}, action) {
-    if (action.type === 'INC') {
-      return {i: 1 + state.i};
-    }
-    return state;
-  };
-
-  const persistedReducer = persistReducer({storage, key: 'myRoot'}, reducer);
+  const persistedReducer = persistReducer({storage, key: 'myRoot'}, sampleReducer);
 
   const store = createStore(persistedReducer);
 
@@ -90,8 +83,6 @@ test('not saving pouchdb_rev', async () => {
   );
 
   const store = createStore(persistedReducer);
-
-  storage.store = store;
 
   const persistor = await createPersistor(store);
 

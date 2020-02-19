@@ -10,16 +10,13 @@
 
     import { createStore } from 'redux';
 
-    import { persistStore } from 'redux-persist';
-    // IMPORTANT: persistReducer must be imported here, not
-    // from 'redux-persist'
-    import { persistReducer, PouchDBStorage } from 'redux-persist-pouchdb';
+    import { persistStore, persistReducer } from 'redux-persist';
+    import PouchDBStorage from 'redux-persist-pouchdb';
 
-    // just doin' the usual PouchDB stuff
+    // the usual PouchDB stuff
     PouchDB.plugin( require( 'pouchdb-adapter-memory' ) );
     const pouchdb = new PouchDB( 'test', { adapter: 'memory' } );
 
-    const storage = new PouchDBStorage(pouchdb);
 
     // your regular reducer
     const reducer = function( state={ i: 0 }, action ) {
@@ -68,11 +65,6 @@ The `PouchDBStorage` object has the following attributes and methods:
     const doc = storage.db.get({ id: 'my_doc' });
 
 The underlying PouchDB object.
-
-### store
-
-The storage object must be given a link to the store using it so that we
-can save the new _rev of the document once it's sent to PouchDB.
 
 #### getItem( *key* )
 
