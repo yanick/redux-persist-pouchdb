@@ -17,6 +17,7 @@
     PouchDB.plugin( require( 'pouchdb-adapter-memory' ) );
     const pouchdb = new PouchDB( 'test', { adapter: 'memory' } );
 
+    const storage = new PouchDBStorage(pouchdb);
 
     // your regular reducer
     const reducer = function( state={ i: 0 }, action ) {
@@ -30,7 +31,6 @@
     );
 
     const store = createStore( persistedReducer );
-    storage.store = store;
 
     const persistor = persistStore( store, null, () => {
         store.dispatch({ type: INC });
