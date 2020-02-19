@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PouchDBStorage = void 0;
+exports.default = void 0;
 
 var _pouchdb = _interopRequireDefault(require("pouchdb"));
 
@@ -48,4 +48,4 @@ class PouchDBStorage {
 
 }
 
-exports.PouchDBStorage = PouchDBStorage;
+exports.default = PouchDBStorage;

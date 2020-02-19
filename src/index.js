@@ -1,6 +1,6 @@
 import PouchDB from 'pouchdb';
 
-export class PouchDBStorage {
+export default class PouchDBStorage {
   constructor(db, options = {}) {
     if (typeof db !== 'string' && options == {}) {
       this.db = db;

@@ -4,7 +4,7 @@ PouchDB.plugin(require('pouchdb-adapter-memory'));
 
 import {createStore} from 'redux';
 import {persistStore,persistReducer} from 'redux-persist';
-import {PouchDBStorage} from './index';
+import PouchDBStorage from './index';
 
 const sampleReducer = function(state = {i: 0}, action) {
   if (action.type === 'INC') {
