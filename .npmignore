@@ -1,1 +1,4 @@
 .prettierignore
+.babelrc
+src
+*.tgz
