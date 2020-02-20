@@ -1,49 +1,34 @@
-import { REHYDRATE } from 'redux-persist';
-import { persistReducer as originalPR } from 'redux-persist';
-import PouchDB from 'pouchdb';
+import PouchDB from "pouchdb";
 
-export function persistReducer(persistConfig, rootReducer) {
-    const reducer = originalPR(persistConfig, rootReducer);
-
-    return function(state=undefined,action) {
-        let new_state = reducer(state,action);
-
-        // all that to add the _rev to the _persist state
-        if( action.type === REHYDRATE && new_state._persist && action.payload && action.payload._persist ) {
-            new_state._persist._rev = action.payload._persist._rev;
-        }
-
-        return new_state;
-    };
-}
-
-export class PouchDBStorage {
-
-    constructor(db,options={}) {
-        if( typeof db !== 'string' && options == {} ) {
-            this.db = db;
-        }
-        else {
-            this.db = new PouchDB(db,options);
-        }
+export default class PouchDBStorage {
+  constructor(db, options = {}) {
+    if (typeof db !== "string" && options == {}) {
+      this.db = db;
+    } else {
+      this.db = new PouchDB(db, options);
     }
 
-    async getItem( key ) {
-        const doc = await this.db.get(key);
-        if( doc.doc._persist ) {
-            doc.doc._persist._rev = doc._rev;
-            doc.doc._persist = JSON.stringify(doc.doc._persist);
-        }
-        return JSON.stringify(doc.doc);
-    }
+    this.docRevs = {};
+  }
 
-    async setItem( key, value ) {
-        const doc = JSON.parse(value);
-        doc._persist = JSON.parse(doc._persist);
-        return this.db.put({ _id: key, _rev: doc._persist._rev, doc });
-    }
+  async getItem(key) {
+    const doc = await this.db.get(key);
+    this.docRevs[key] = doc._rev;
+    return JSON.stringify(doc.doc);
+  }
 
-    async removeItem( key, value ) {
-        return this.db.remove( await this.db.get(key) );
-    }
+  async setItem(key, value) {
+    const doc = JSON.parse(value);
+    const _rev = this.docRevs[key];
+
+    const result = await this.db.put({ _id: key, _rev, doc });
+
+    this.docRevs[key] = result.rev;
+    return result;
+  }
+
+  async removeItem(key, value) {
+    await this.db.remove({ _id: key, _rev: this.docRevs[keys] });
+    delete this.docRevs[key];
+  }
 }

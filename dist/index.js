@@ -3,58 +3,50 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.persistReducer = persistReducer;
-exports.PouchDBStorage = void 0;
-
-var _reduxPersist = require("redux-persist");
+exports.default = void 0;
 
 var _pouchdb = _interopRequireDefault(require("pouchdb"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function persistReducer(persistConfig, rootReducer) {
-  const reducer = (0, _reduxPersist.persistReducer)(persistConfig, rootReducer);
-  return function (state = undefined, action) {
-    let new_state = reducer(state, action); // all that to add the _rev to the _persist state
-
-    if (action.type === _reduxPersist.REHYDRATE && new_state._persist && action.payload && action.payload._persist) {
-      new_state._persist._rev = action.payload._persist._rev;
-    }
-
-    return new_state;
-  };
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
 }
 
 class PouchDBStorage {
   constructor(db, options = {}) {
-    this._db = new _pouchdb.default(db, options);
+    if (typeof db !== "string" && options == {}) {
+      this.db = db;
+    } else {
+      this.db = new _pouchdb.default(db, options);
+    }
+
+    this.docRevs = {};
   }
 
   async getItem(key) {
-    const doc = await this._db.get(key);
-
-    if (doc.doc._persist) {
-      doc.doc._persist._rev = doc._rev;
-      doc.doc._persist = JSON.stringify(doc.doc._persist);
-    }
-
+    const doc = await this.db.get(key);
+    this.docRevs[key] = doc._rev;
     return JSON.stringify(doc.doc);
   }
 
   async setItem(key, value) {
     const doc = JSON.parse(value);
-    doc._persist = JSON.parse(doc._persist);
-    return this._db.put({
+    const _rev = this.docRevs[key];
+    const result = await this.db.put({
       _id: key,
-      _rev: doc._persist._rev,
+      _rev,
       doc
     });
+    this.docRevs[key] = result.rev;
+    return result;
   }
 
   async removeItem(key, value) {
-    return this._db.remove((await this._db.get(key)));
+    await this.db.remove({
+      _id: key,
+      _rev: this.docRevs[keys]
+    });
+    delete this.docRevs[key];
   }
-
 }
 
-exports.PouchDBStorage = PouchDBStorage;
+exports.default = PouchDBStorage;
