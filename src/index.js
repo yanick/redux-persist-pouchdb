@@ -31,4 +31,8 @@ export default class PouchDBStorage {
     await this.db.remove({ _id: key, _rev: this.docRevs[keys] });
     delete this.docRevs[key];
   }
+
+  async getAllKeys() {
+      return Object.keys(this.docRevs);
+  }
 }
