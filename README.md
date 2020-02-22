@@ -83,12 +83,12 @@ Returns all keys currently used by the _PouchDBStorage_ object.
 
 ## Recipes
 
-### Listening to database changes  
+### Listening to database changes
 
-It's totally possible to listen to database changes via the 
+It's totally possible to listen to database changes via the
 `db` attribute of the PouchDBStorage object. Keep in mind, however,
 that if you get a new revision from the database, you'll have to
-update `docRevs` manually to be sure that the new update from 
+update `docRevs` manually to be sure that the new update from
 PouchDBStorage won't result in a conflict.
 
 ```
@@ -113,4 +113,3 @@ storage.db
         });
     });
 ```
-
