@@ -38,14 +38,7 @@
 
 ## Description
 
-This package exports two things: the function
-`persistReducer` and the class `PouchDBStorage`.
-
-### persistReducer( persistConfig, rootReducer )
-
-A thin wrapper around `redux-persist`'s own `persistReducer` that
-wrap the reducer such that the `_rev`ision of the retrieved document
-is saved along the document.
+This package exports the class `PouchDBStorage`.
 
 ### PouchDBStorage
 
@@ -66,15 +59,19 @@ The `PouchDBStorage` object has the following attributes and methods:
 
 The underlying PouchDB object.
 
-#### getItem( _key_ )
+#### async getItem( _key_ )
 
 Retrieves the persisted document based on its key.
 
-#### setItem( _key_, _value_ )
+#### async setItem( _key_, _value_ )
 
 Save the document to PouchDB.
 
-#### removeItem( _key_ )
+#### async removeItem( _key_ )
 
 Savagely destroy the document in PouchDB (but doesn't
 touch the current state in the Redux store).
+
+#### getAllKeys()
+
+Returns all keys currently used by the _PouchDBStorage_ object.
