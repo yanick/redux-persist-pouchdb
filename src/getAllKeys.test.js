@@ -21,15 +21,17 @@ function createPersistor(store) {
   });
 }
 
-test('getAllKeys', async () => {
-    const storage = new PouchDBStorage("getAllKeys", { adapter: "memory" });
-  const persistedReducer = persistReducer({ storage, key: "myRoot" }, (state={}) => ({ ...state, foo: 13}));
+test("getAllKeys", async () => {
+  const storage = new PouchDBStorage("getAllKeys", { adapter: "memory" });
+  const persistedReducer = persistReducer(
+    { storage, key: "myRoot" },
+    (state = {}) => ({ ...state, foo: 13 })
+  );
 
   const store = createStore(persistedReducer);
   const persistor = await createPersistor(store);
-  store.dispatch({type: 'NOOP'});
+  store.dispatch({ type: "NOOP" });
   await persistor.flush();
 
-expect(storage.getAllKeys()).resolves.toEqual(['persist:myRoot']);
-
+  expect(storage.getAllKeys()).resolves.toEqual(["persist:myRoot"]);
 });

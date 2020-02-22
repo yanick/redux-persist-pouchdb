@@ -74,4 +74,4 @@ touch the current state in the Redux store).
 
 #### getAllKeys()
 
-Returns all keys currently used by the *PouchDBStorage* object.
+Returns all keys currently used by the _PouchDBStorage_ object.

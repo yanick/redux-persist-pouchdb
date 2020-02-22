@@ -33,6 +33,6 @@ export default class PouchDBStorage {
   }
 
   async getAllKeys() {
-      return Object.keys(this.docRevs);
+    return Object.keys(this.docRevs);
   }
 }
